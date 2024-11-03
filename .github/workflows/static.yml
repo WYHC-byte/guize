@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>规则怪谈 - 虚无小区</title>
+    <style>
+        :root {
+            --primary-color: #ff4444;
+            --secondary-color: #2c3e50;
+            --text-color: #ecf0f1;
+            --background-color: #1a1a1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(0,0,0,0.8);
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .search-bar {
+            position: relative;
+            flex: 0 1 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-color);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.95);
+            border-radius: 5px;
+            margin-top: 5px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .section {
+            margin: 40px 0;
+            padding: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+        }
+
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        /* 滑块样式 */
+        .slider {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            margin-top: 60px;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide-content {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+        }
+
+        .slide-title {
+            font-size: 2em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* 新版块样式 */
+        .world-lore {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .lore-chapter {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .multiplayer-mode {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .mode-card {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .item-encyclopedia {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .item-card {
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .quest-system {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .quest-card {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .achievement-card {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .community-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .forum-preview {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .event-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin: 20px 0;
+        }
+
+        .calendar-day {
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .screenshot-wall {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .screenshot {
+            position: relative;
+            padding-top: 75%;
+            background: rgba(0,0,0,0.7);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .music-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .music-item {
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dev-log {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .log-entry {
+            margin: 15px 0;
+            padding-left: 20px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .faq-section {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .faq-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .tip-card {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .easter-eggs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .egg-card {
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .costume-system {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .costume-card {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .difficulty-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .difficulty-card {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .difficulty-easy { border-color: #4CAF50; }
+        .difficulty-medium { border-color: #FFC107; }
+        .difficulty-hard { border-color: #f44336; }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .search-bar {
+                width: 100%;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .slider {
+                height: 300px;
+            }
+
+            .slide-content {
+                padding: 10px;
+                max-width: 90%;
+            }
+
+            .section {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo">规则怪谈</a>
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="搜索游戏内容..." oninput="handleSearch(this.value)">
+                <div class="search-results"></div>
+            </div>
+            <nav class="nav-links">
+                <a href="#world">世界观</a>
+                <a href="#multiplayer">多人模式</a>
+                <a href="#items">道具图鉴</a>
+                <a href="#quests">任务系统</a>
+                <a href="#community">社区</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container"></div>
+        <!-- 滑块区域 -->
+        <div class="slider">
+            <div class="slide active">
+                <div class="slide-content">
+                    <h2 class="slide-title">欢迎来到虚无小区</h2>
+                    <p>探索充满未知的诡异世界，发现隐藏的规则与真相。</p>
+                </div>
+            </div>
+            <div class="slide">
+                <div class="slide-content">
+                    <h2 class="slide-title">全新规则系统</h2>
+                    <p>每个区域都有独特的规则，打破规则将面临致命后果。</p>
+                </div>
+            </div>
+            <div class="slide">
+                <div class="slide-content">
+                    <h2 class="slide-title">多人联机模式</h2>
+                    <p>与其他玩家一起探索、生存，或者成为规则执行者。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 世界观/背景故事 -->
+        <section id="world" class="section world-lore">
+            <h2>世界观设定</h2>
+            <div class="lore-chapter">
+                <h3>起源之谜</h3>
+                <p>虚无小区突然出现在城市边缘，没人知道它从何而来。每个进入小区的人都会发现，这里的规则与现实世界完全不同。</p>
+            </div>
+            <div class="lore-chapter">
+                <h3>规则体系</h3>
+                <p>小区中的每个区域都有其特定的规则。有些显而易见，有些需要付出代价才能发现。打破规则的后果可能是致命的。</p>
+            </div>
+        </section>
+
+        <!-- 多人联机模式 -->
+        <section id="multiplayer" class="section multiplayer-mode">
+            <div class="mode-card">
+                <h3>生存模式</h3>
+                <p>与其他玩家组队探索小区，共同解开谜题，对抗异常现象。</p>
+            </div>
+            <div class="mode-card">
+                <h3>规则执行者模式</h3>
+                <p>成为规则的维护者，惩罚违规者，维持小区的秩序。</p>
+            </div>
+            <div class="mode-card">
+                <h3>对抗模式</h3>
+                <p>玩家分为两队，一队试图完成任务逃离，另一队阻止他们。</p>
+            </div>
+        </section>
+
+        <!-- 道具图鉴 -->
+        <section id="items" class="section item-encyclopedia">
+            <div class="item-card">
+                <h3>记录仪</h3>
+                <p>可以记录规则异常，发现隐藏的真相。</p>
+            </div>
+            <div class="item-card">
+                <h3>防护符</h3>
+                <p>一次性道具，可以在违反规则时保护使用者。</p>
+            </div>
+            <div class="item-card">
+                <h3>真相之镜</h3>
+                <p>能够看到被隐藏的事物，但使用时会消耗精神力。</p>
+            </div>
+        </section>
+
+        <!-- 任务系统 -->
+        <section id="quests" class="section quest-system">
+            <div class="quest-card">
+                <h3>主线任务：寻找真相</h3>
+                <p>探索小区的起源，发现创造者的意图。</p>
+            </div>
+            <div class="quest-card">
+                <h3>日常任务：规则收集</h3>
+                <p>记录并验证新发现的规则，获得奖励。</p>
+            </div>
+        </section>
+
+        <!-- 社区论坛 -->
+        <section id="community" class="section community-section">
+            <div class="forum-preview">
+                <h3>最新讨论</h3>
+                <ul>
+                    <li>发现新规则：三楼的红门现象</li>
+                    <li>求助：如何通过镜像走廊</li>
+                    <li>分享：地下室生存指南</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+        <section class="section difficulty-levels">
+            <h2>游戏难度说明</h2>
+            <div class="difficulty-card difficulty-easy">
+                <h3>简单模式</h3>
+                <p>- 规则违反时有3次警告机会</p>
+                <p>- 道具掉落率提高</p>
+                <p>- 提供详细的规则提示</p>
+            </div>
+            <div class="difficulty-card difficulty-medium">
+                <h3>普通模式</h3>
+                <p>- 规则违反时有1次警告机会</p>
+                <p>- 标准道具掉落率</p>
+                <p>- 提供基础规则提示</p>
+            </div>
+            <div class="difficulty-card difficulty-hard">
+                <h3>噩梦模式</h3>
+                <p>- 规则违反直接淘汰</p>
+                <p>- 降低道具掉落率</p>
+                <p>- 无规则提示</p>
+            </div>
+        </section>
+
+        <!-- 游戏背景故事 -->
+        <section class="section world-lore">
+            <h2>世界观设定</h2>
+            <div class="lore-chapter">
+                <h3>虚无小区的诞生</h3>
+                <p>在一个平凡的清晨，这座诡异的小区突然出现在城市边缘。没有人知道它是如何出现的，也没有人知道它为什么会出现。</p>
+            </div>
+            <div class="lore-chapter">
+                <h3>规则的起源</h3>
+                <p>每个进入小区的人都会发现，这里存在着一系列不可违背的规则。这些规则似乎是这个空间本身的意志体现。</p>
+            </div>
+            <div class="lore-chapter">
+                <h3>时间异常</h3>
+                <p>小区内的时间流速与外界不同，有时快有时慢，这种现象似乎与规则的运作有关。</p>
+            </div>
+        </section>
+
+        <!-- 音乐/音效列表 -->
+        <section class="section music-list">
+            <h2>游戏音乐</h2>
+            <div class="music-item">
+                <div>
+                    <h3>主题曲：虚无回响</h3>
+                    <p>作曲：未知作者</p>
+                </div>
+                <button class="play-btn">播放</button>
+            </div>
+            <div class="music-item">
+                <div>
+                    <h3>环境音乐：寂静走廊</h3>
+                    <p>氛围音效设计</p>
+                </div>
+                <button class="play-btn">播放</button>
+            </div>
+        </section>
+
+        <!-- 开发者日志 -->
+        <section class="section dev-log">
+            <h2>开发者日志</h2>
+            <div class="log-entry">
+                <h3>2024.3.15 更新</h3>
+                <p>- 新增三个探索区域</p>
+                <p>- 优化规则系统</p>
+                <p>- 修复已知bug</p>
+            </div>
+            <div class="log-entry">
+                <h3>2024.2.28 更新</h3>
+                <p>- 加入新道具系统</p>
+                <p>- 改进多人联机体验</p>
+            </div>
+        </section>
+
+        <!-- FAQ常见问题 -->
+        <section class="section faq-section">
+            <h2>常见问题</h2>
+            <div class="faq-item">
+                <h3>Q: 如何开始游戏？</h3>
+                <p>A: 选择难度后，从小区大门进入。请务必仔细阅读初始规则说明。</p>
+            </div>
+            <div class="faq-item">
+                <h3>Q: 违反规则会怎样？</h3>
+                <p>A: 根据难度不同，会有不同程度的惩罚，从警告到直接淘汰。</p>
+            </div>
+        </section>
+
+        <!-- 游戏技巧分享 -->
+        <section class="section tips-grid">
+            <h2>游戏技巧</h2>
+            <div class="tip-card">
+                <h3>新手入门技巧</h3>
+                <p>1. 随身携带记录仪</p>
+                <p>2. 注意观察环境变化</p>
+                <p>3. 保持安全距离</p>
+            </div>
+            <div class="tip-card">
+                <h3>进阶生存技巧</h3>
+                <p>1. 规则组合运用</p>
+                <p>2. 道具使用时机</p>
+                <p>3. 团队配合要点</p>
+            </div>
+        </section>
+
+        <!-- 彩蛋收集 -->
+        <section class="section easter-eggs">
+            <h2>神秘彩蛋</h2>
+            <div class="egg-card">
+                <h3>???</h3>
+                <p>在三楼镜子前等待午夜...</p>
+            </div>
+            <div class="egg-card">
+                <h3>???</h3>
+                <p>收集七种不同颜色的钥匙...</p>
+            </div>
+        </section>
+
+        <!-- 角色换装系统 -->
+        <section class="section costume-system">
+            <h2>角色装扮</h2>
+            <div class="costume-card">
+                <h3>普通服装</h3>
+                <p>基础探索装备</p>
+            </div>
+            <div class="costume-card">
+                <h3>特殊装扮</h3>
+                <p>解锁特殊对话选项</p>
+            </div>
+            <div class="costume-card">
+                <h3>限定皮肤</h3>
+                <p>活动限定获取</p>
+            </div>
+        </section>
+
+        <!-- 成就系统 -->
+        <section class="section achievement-grid">
+            <h2>成就系统</h2>
+            <div class="achievement-card">
+                <h3>初探虚无</h3>
+                <p>首次进入小区</p>
+                <div class="progress">已解锁</div>
+            </div>
+            <div class="achievement-card">
+                <h3>规则收集者</h3>
+                <p>记录100条规则</p>
+                <div class="progress">进度: 45/100</div>
+            </div>
+            <div class="achievement-card">
+                <h3>生存专家</h3>
+                <p>在噩梦难度生存30天</p>
+                <div class="progress">未解锁</div>
+            </div>
+        </section>
+
+    <script>
+        // 滑块功能
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            currentSlide = (index + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // 自动播放滑块
+        setInterval(nextSlide, 5000);
+
+        // 搜索功能
+        function handleSearch(value) {
+            const searchResults = document.querySelector('.search-results');
+            if (value.length > 0) {
+                searchResults.style.display = 'block';
+                // 模拟搜索结果
+                searchResults.innerHTML = `
+                    <div style="padding: 10px;">
+                        <div>搜索结果：${value}</div>
+                        <div>- 相关规则</div>
+                        <div>- 相关物品</div>
+                        <div>- 相关任务</div>
+                    </div>
+                `;
+            } else {
+                searchResults.style.display = 'none';
+            }
+        }
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // 动态加载内容
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom >= 0) {
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        // 响应式导航菜单
+        const navLinks = document.querySelector('.nav-links');
+        let isMenuOpen = false;
+
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            navLinks.style.display = isMenuOpen ? 'flex' : 'none';
+        }
+
+        // 在小屏幕下自动隐藏搜索结果
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.search-results').style.display = 'none';
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 设置初始状态
+            slides[0].classList.add('active');
+
+            // 添加过渡效果
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            });
+        });
+
+        // 主题切换功能
+        let isDarkTheme = true;
+        
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            if (isDarkTheme) {
+                document.documentElement.style.setProperty('--background-color', '#1a1a1a');
+                document.documentElement.style.setProperty('--text-color', '#ecf0f1');
+            } else {
+                document.documentElement.style.setProperty('--background-color', '#ecf0f1');
+                document.documentElement.style.setProperty('--text-color', '#1a1a1a');
+            }
+        }
+    </script>
+</body>
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPB8OJjDvOruk6WgreJZ4z3HKG6UIRK6k",
+      authDomain: "guize-wyhc.firebaseapp.com",
+      projectId: "guize-wyhc",
+      storageBucket: "guize-wyhc.firebasestorage.app",
+      messagingSenderId: "344467329657",
+      appId: "1:344467329657:web:64020b387d78daa372faa8",
+      measurementId: "G-KL2V46RWJJ"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
+</html>
