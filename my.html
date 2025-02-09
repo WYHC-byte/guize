@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的 - 个人中心</title>
+  <!-- 引入 Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* 自定义暗黑风格 */
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+  </style>
+</head>
+<body class="pt-16 pb-16">
+  <!-- 顶部固定标题 -->
+  <header class="fixed top-0 left-0 w-full bg-gray-900 p-4 text-center z-50">
+    <h1 class="text-xl font-bold">我的</h1>
+  </header>
+
+  <main class="container mx-auto px-4 pt-6">
+    <!-- 用户信息卡片 -->
+    <div class="bg-gray-800 p-6 rounded shadow-md max-w-md mx-auto mb-6">
+      <div class="flex items-center">
+        <img src="https://via.placeholder.com/80" alt="用户头像" class="w-16 h-16 rounded-full mr-4">
+        <div>
+          <h2 class="text-lg font-bold">匿名用户</h2>
+          <p class="text-sm text-gray-400">欢迎来到暗网</p>
+        </div>
+      </div>
+      <div class="mt-4">
+        <p class="text-sm">当前积分：<span id="userPoints">0</span></p>
+      </div>
+    </div>
+
+    <!-- 个人设置与记录 -->
+    <div class="bg-gray-800 p-6 rounded shadow-md max-w-md mx-auto">
+      <ul class="space-y-4">
+        <li class="flex items-center justify-between">
+          <span>账户信息</span>
+          <a href="#" class="text-blue-400 hover:underline">查看</a>
+        </li>
+        <li class="flex items-center justify-between">
+          <span>积分记录</span>
+          <a href="#" class="text-blue-400 hover:underline">查看</a>
+        </li>
+        <li class="flex items-center justify-between">
+          <span>抽奖记录</span>
+          <a href="#" class="text-blue-400 hover:underline">查看</a>
+        </li>
+        <li class="flex items-center justify-between">
+          <span>安全设置</span>
+          <a href="#" class="text-blue-400 hover:underline">修改</a>
+        </li>
+        <li class="flex items-center justify-between">
+          <span>意见反馈</span>
+          <a href="#" class="text-blue-400 hover:underline">提交</a>
+        </li>
+      </ul>
+    </div>
+  </main>
+
+  <!-- 底部导航栏 -->
+  <nav class="fixed bottom-0 left-0 w-full bg-gray-800 text-white flex justify-around py-3 z-50">
+    <!-- 主页 -->
+    <a href="index.html" class="flex flex-col items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 01-2 2H3a2 2 0 01-2-2V9z" />
+      </svg>
+      <span class="text-sm">主页</span>
+    </a>
+    <!-- 福利 -->
+    <a href="fuli.html" class="flex flex-col items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A4 4 0 001 9.87v4.263a4 4 0 005.555 3.664l3.197-2.132a4 4 0 000-6.232z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M23 9.87v4.263a4 4 0 01-5.555 3.664l-3.197-2.132a4 4 0 010-6.232l3.197-2.132A4 4 0 0123 9.87z" />
+      </svg>
+      <span class="text-sm">福利</span>
+    </a>
+    <!-- 我的 -->
+    <a href="my.html" class="flex flex-col items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.657 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span class="text-sm">我的</span>
+    </a>
+  </nav>
+
+  <script>
+    // 模拟从全局或后端获取当前用户积分（这里只是示例）
+    // 实际应用中，可通过 API 或 localStorage 获取积分数据
+    let userPoints = 0;
+    document.getElementById('userPoints').textContent = userPoints;
+  </script>
+</body>
+</html>

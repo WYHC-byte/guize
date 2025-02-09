@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>福利页面 - 签到与大转盘抽奖</title>
+  <!-- 引入 Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* 自定义暗黑风格 */
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    /* 防止 canvas 旋转过程中出现锯齿 */
+    canvas {
+      transition: transform 0.5s;
+    }
+  </style>
+</head>
+<body class="pt-16 pb-16">
+  <!-- 顶部积分显示 -->
+  <header class="fixed top-0 left-0 w-full bg-gray-900 p-4 text-center z-50">
+    <span id="pointsDisplay" class="text-lg font-bold">当前积分：0</span>
+  </header>
+
+  <main class="container mx-auto px-4">
+    <h1 class="text-3xl font-bold mb-6 text-center">福利页面</h1>
+    
+    <!-- 签到功能区域 -->
+    <div class="bg-gray-800 p-6 rounded shadow-md w-full max-w-md mx-auto mb-8">
+      <h2 class="text-xl font-bold mb-4">签到功能</h2>
+      <button id="checkInBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full">签到</button>
+      <p id="checkInMsg" class="mt-4 text-sm"></p>
+    </div>
+    
+    <!-- 大转盘抽奖区域 -->
+    <div class="bg-gray-800 p-6 rounded shadow-md w-full max-w-md mx-auto">
+      <h2 class="text-xl font-bold mb-4">大转盘抽奖（消耗 50 积分/次）</h2>
+      <div class="relative flex items-center justify-center">
+        <!-- 抽奖转盘 -->
+        <canvas id="lotteryWheel" width="300" height="300" class="rounded-full"></canvas>
+        <!-- 指针（利用 CSS 制作一个三角形） -->
+        <div class="absolute top-0" style="width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 30px solid #fff;"></div>
+      </div>
+      <button id="spinBtn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full">抽奖</button>
+    </div>
+  </main>
+
+  <!-- 底部导航栏 -->
+  <nav class="fixed bottom-0 left-0 w-full bg-gray-800 text-white flex justify-around py-3 z-50">
+    <a href="index.html" class="flex flex-col items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 01-2 2H3a2 2 0 01-2-2V9z" />
+      </svg>
+      <span class="text-sm">主页</span>
+    </a>
+    <a href="fuli.html" class="flex flex-col items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A4 4 0 001 9.87v4.263a4 4 0 005.555 3.664l3.197-2.132a4 4 0 000-6.232z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M23 9.87v4.263a4 4 0 01-5.555 3.664l-3.197-2.132a4 4 0 010-6.232l3.197-2.132A4 4 0 0123 9.87z" />
+      </svg>
+      <span class="text-sm">福利</span>
+    </a>
+    <a href="my.html" class="flex flex-col items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.657 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span class="text-sm">我的</span>
+    </a>
+  </nav>
+
+  <script>
+    /********** 全局积分变量 **********/
+    let points = 0;
+    const pointsDisplay = document.getElementById('pointsDisplay');
+    function updatePointsDisplay() {
+      pointsDisplay.textContent = "当前积分：" + points;
+    }
+    updatePointsDisplay();
+
+    /********** 签到功能 **********/
+    const checkInBtn = document.getElementById('checkInBtn');
+    const checkInMsg = document.getElementById('checkInMsg');
+    let isCheckedIn = false;
+    
+    checkInBtn.addEventListener('click', function() {
+      if (!isCheckedIn) {
+        isCheckedIn = true;
+        points += 100;
+        updatePointsDisplay();
+        checkInMsg.textContent = "签到成功！您获得了 100 积分。";
+        checkInBtn.disabled = true;
+        checkInBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    });
+    
+    /********** 大转盘抽奖 **********/
+    const canvas = document.getElementById('lotteryWheel');
+    const ctx = canvas.getContext('2d');
+    // 定义奖项和每个扇区的颜色
+    const prizes = ["黑市通行证", "匿名积分", "暗网道具", "神秘礼包", "VIP权限", "神秘身份", "特殊符号", "额外奖励"];
+    const numSectors = prizes.length;
+    const arc = Math.PI * 2 / numSectors;
+    const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#FF8F33", "#33FFF5", "#8D33FF", "#FFD433"];
+    
+    // 绘制转盘
+    function drawWheel() {
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = Math.min(centerX, centerY) - 10;
+      for (let i = 0; i < numSectors; i++) {
+        const startAngle = i * arc;
+        const endAngle = startAngle + arc;
+        // 绘制扇形
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = colors[i];
+        ctx.fill();
+        // 绘制扇形文字
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(startAngle + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 14px sans-serif";
+        ctx.fillText(prizes[i], radius - 10, 10);
+        ctx.restore();
+      }
+    }
+    drawWheel();
+    
+    let spinAngle = 0; // 累计旋转角度
+    let isSpinning = false;
+    
+    function spinWheel() {
+      // 如果当前积分不足 50，则提示并返回
+      if (points < 50) {
+        alert("积分不足，无法抽奖！");
+        return;
+      }
+      // 扣除 50 积分并更新显示
+      points -= 50;
+      updatePointsDisplay();
+      
+      if (isSpinning) return;
+      isSpinning = true;
+      
+      // 禁用抽奖按钮
+      const spinBtn = document.getElementById('spinBtn');
+      spinBtn.disabled = true;
+      spinBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      
+      // 计算随机中奖扇区
+      const arcDeg = 360 / prizes.length;
+      const randomIndex = Math.floor(Math.random() * prizes.length);
+      // 每个扇区的中间角度（单位：度）
+      const winningSectorMiddle = randomIndex * arcDeg + arcDeg / 2;
+      // 指针默认在上方（0度），为了让中奖扇区正好指向上方，
+      // 计算需要旋转的目标角度（额外旋转 5 圈 + 调整偏移量）
+      let targetRotation = 360 * 5 + (360 - (winningSectorMiddle - 90));
+      
+      const duration = 5000; // 动画持续 5 秒
+      const startTime = performance.now();
+      
+      function animate(time) {
+        const elapsed = time - startTime;
+        if (elapsed < duration) {
+          const progress = elapsed / duration;
+          // 使用 easeOut 效果，缓慢减速
+          const easeOutProgress = 1 - Math.pow(1 - progress, 3);
+          const currentRotation = spinAngle + targetRotation * easeOutProgress;
+          canvas.style.transform = `rotate(${currentRotation}deg)`;
+          requestAnimationFrame(animate);
+        } else {
+          spinAngle += targetRotation;
+          canvas.style.transform = `rotate(${spinAngle}deg)`;
+          isSpinning = false;
+          spinBtn.disabled = false;
+          spinBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          alert("恭喜你获得：" + prizes[randomIndex]);
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    
+    document.getElementById('spinBtn').addEventListener('click', spinWheel);
+  </script>
+</body>
+</html>
